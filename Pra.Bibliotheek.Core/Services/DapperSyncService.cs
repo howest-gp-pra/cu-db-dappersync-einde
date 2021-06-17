@@ -19,8 +19,15 @@ namespace Pra.Bibliotheek.Core.Services
             string sql = "select * from author order by name";
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))
             {
-                connection.Open();
-                authors = connection.Query<Author>(sql).ToList();
+                try
+                {
+                    connection.Open();
+                    authors = connection.Query<Author>(sql).ToList();
+                }
+                catch
+                {
+                    return null;
+                }
             }
             return authors;
         }
@@ -29,14 +36,17 @@ namespace Pra.Bibliotheek.Core.Services
             string sql = "Insert into author (id, name) values (@id, @name)";
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))
             {
-                connection.Open();
-                //int affectedRows = connection.Execute(sql, new { id = author.ID, naam = author.Name });
-                int affectedRows = connection.Execute(sql, author);
-                connection.Close();
-                if (affectedRows > 0)
-                    return true;
-                else
+                try
+                {
+                    connection.Open();
+                    //int affectedRows = connection.Execute(sql, new { id = author.ID, naam = author.Name });
+                    int affectedRows = connection.Execute(sql, author);
+                    return affectedRows > 0;
+                }
+                catch
+                {
                     return false;
+                }
             }
         }
         public bool UpdateAuthor(Author author)
@@ -44,12 +54,16 @@ namespace Pra.Bibliotheek.Core.Services
             string sql = "Update author set name = @name Where Id = @id";
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))
             {
-                connection.Open();
-                int affectedRows = connection.Execute(sql, author);
-                if (affectedRows > 0)
-                    return true;
-                else
+                try
+                {
+                    connection.Open();
+                    int affectedRows = connection.Execute(sql, author);
+                    return affectedRows > 0;
+                }
+                catch
+                {
                     return false;
+                }
             }
         }
         public bool DeleteAuthor(Author author)
@@ -59,12 +73,16 @@ namespace Pra.Bibliotheek.Core.Services
             string sql = "Delete from author Where Id = @id";
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))
             {
-                connection.Open();
-                int affectedRows = connection.Execute(sql, author);
-                if (affectedRows > 0)
-                    return true;
-                else
+                try
+                {
+                    connection.Open();
+                    int affectedRows = connection.Execute(sql, author);
+                    return affectedRows > 0;
+                }
+                catch
+                {
                     return false;
+                }   
             }
         }
         public bool IsAuthorInUse(Author author)
@@ -72,12 +90,16 @@ namespace Pra.Bibliotheek.Core.Services
             string sql = "select count(*) from book where authorID = @id";
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))
             {
-                connection.Open();
-                int count = connection.ExecuteScalar<int>(sql, author);
-                if (count == 0)
+                try
+                {
+                    connection.Open();
+                    int count = connection.ExecuteScalar<int>(sql, author);
+                    return count > 0;
+                }
+                catch
+                {
                     return false;
-                else
-                    return true;
+                }
             }
         }
         public bool DoesAuthorIDExist(string authorID)
@@ -86,13 +108,17 @@ namespace Pra.Bibliotheek.Core.Services
             //string sql = $"select count(*) from author where id = '{authorID}'";
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))
             {
-                connection.Open();
-                int count = connection.ExecuteScalar<int>(sql, new { id = authorID });
-                //int count = connection.ExecuteScalar<int>(sql);
-                if (count == 0)
+                try
+                {
+                    connection.Open();
+                    int count = connection.ExecuteScalar<int>(sql, new { id = authorID });
+                    //int count = connection.ExecuteScalar<int>(sql);
+                    return count > 0;
+                }
+                catch
+                {
                     return false;
-                else
-                    return true;
+                }
             }
         }
         public Author FindAuthorByID(string authorID)
@@ -101,8 +127,15 @@ namespace Pra.Bibliotheek.Core.Services
             string sql = $"Select id, name from author where id = '{authorID}' ";
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))
             {
-                connection.Open();
-                author = connection.QueryFirst<Author>(sql);
+                try
+                {
+                    connection.Open();
+                    author = connection.QueryFirst<Author>(sql);
+                }
+                catch
+                {
+                    return null;
+                }
             }
             return author;
         }
@@ -112,8 +145,15 @@ namespace Pra.Bibliotheek.Core.Services
             string sql = "Select id, name from author where name = @findname";
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))
             {
-                connection.Open();
-                author = connection.QueryFirst<Author>(sql, new { findname = name });
+                try
+                {
+                    connection.Open();
+                    author = connection.QueryFirst<Author>(sql, new { findname = name });
+                }
+                catch
+                {
+                    return null;
+                }
             }
             return author;
         }
@@ -191,12 +231,16 @@ namespace Pra.Bibliotheek.Core.Services
             string sql = $"select count(*) from book where publisherID = '{publisher.ID}'";
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))
             {
-                connection.Open();
-                int count = connection.ExecuteScalar<int>(sql);
-                if (count == 0)
+                try
+                {
+                    connection.Open();
+                    int count = connection.ExecuteScalar<int>(sql);
+                    return count > 0;
+                }
+                catch
+                {
                     return false;
-                else
-                    return true;
+                }
             }
         }
         public bool DoesPublisherIDExist(string publisherID)
@@ -207,10 +251,7 @@ namespace Pra.Bibliotheek.Core.Services
                 {
                     connection.Open();
                     Publisher publisher = connection.Get<Publisher>(publisherID);
-                    if (publisher == null)
-                        return false;
-                    else
-                        return true;
+                    return publisher != null;
                 }
                 catch
                 {
@@ -259,15 +300,22 @@ namespace Pra.Bibliotheek.Core.Services
             List<Book> boeken = new List<Book>();
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))
             {
-                connection.Open();
-                if (author == null && publisher == null)
-                    boeken = connection.Query<Book>("Select * from book order by title").ToList();
-                else if (author != null && publisher == null)
-                    boeken = connection.Query<Book>("Select * from book where authorID = @autohorID order by title", new { autohorID = author.ID }).ToList();
-                else if (author == null && publisher != null)
-                    boeken = connection.Query<Book>("Select * from book where publisherID = @publisherID  order by title", new { publisherID = publisher.ID }).ToList();
-                else
-                    boeken = connection.Query<Book>("Select * from book where authorID = @autohorID and publisherID = @publisherID  order by title", new { autohorID = author.ID, publisherID = publisher.ID }).ToList();
+                try
+                {
+                    connection.Open();
+                    if (author == null && publisher == null)
+                        boeken = connection.Query<Book>("Select * from book order by title").ToList();
+                    else if (author != null && publisher == null)
+                        boeken = connection.Query<Book>("Select * from book where authorID = @autohorID order by title", new { autohorID = author.ID }).ToList();
+                    else if (author == null && publisher != null)
+                        boeken = connection.Query<Book>("Select * from book where publisherID = @publisherID  order by title", new { publisherID = publisher.ID }).ToList();
+                    else
+                        boeken = connection.Query<Book>("Select * from book where authorID = @autohorID and publisherID = @publisherID  order by title", new { autohorID = author.ID, publisherID = publisher.ID }).ToList();
+                }
+                catch
+                {
+                    return null;
+                }
             }
             return boeken;
         }
