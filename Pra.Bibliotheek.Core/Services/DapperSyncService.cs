@@ -21,7 +21,6 @@ namespace Pra.Bibliotheek.Core.Services
             {
                 connection.Open();
                 authors = connection.Query<Author>(sql).ToList();
-                connection.Close();
             }
             return authors;
         }
@@ -47,7 +46,6 @@ namespace Pra.Bibliotheek.Core.Services
             {
                 connection.Open();
                 int affectedRows = connection.Execute(sql, author);
-                connection.Close();
                 if (affectedRows > 0)
                     return true;
                 else
@@ -63,7 +61,6 @@ namespace Pra.Bibliotheek.Core.Services
             {
                 connection.Open();
                 int affectedRows = connection.Execute(sql, author);
-                connection.Close();
                 if (affectedRows > 0)
                     return true;
                 else
@@ -77,7 +74,6 @@ namespace Pra.Bibliotheek.Core.Services
             {
                 connection.Open();
                 int count = connection.ExecuteScalar<int>(sql, author);
-                connection.Close();
                 if (count == 0)
                     return false;
                 else
@@ -93,7 +89,6 @@ namespace Pra.Bibliotheek.Core.Services
                 connection.Open();
                 int count = connection.ExecuteScalar<int>(sql, new { id = authorID });
                 //int count = connection.ExecuteScalar<int>(sql);
-                connection.Close();
                 if (count == 0)
                     return false;
                 else
@@ -108,7 +103,6 @@ namespace Pra.Bibliotheek.Core.Services
             {
                 connection.Open();
                 author = connection.QueryFirst<Author>(sql);
-                connection.Close();
             }
             return author;
         }
@@ -120,7 +114,6 @@ namespace Pra.Bibliotheek.Core.Services
             {
                 connection.Open();
                 author = connection.QueryFirst<Author>(sql, new { findname = name });
-                connection.Close();
             }
             return author;
         }
@@ -133,7 +126,6 @@ namespace Pra.Bibliotheek.Core.Services
                 {
                     connection.Open();
                     List<Publisher> publishers = connection.GetAll<Publisher>().ToList();
-                    connection.Close();
                     publishers = publishers.OrderBy(p => p.Name).ToList();
                     return publishers;
                 }
@@ -152,7 +144,6 @@ namespace Pra.Bibliotheek.Core.Services
                 {
                     connection.Open();
                     connection.Insert(publisher);
-                    connection.Close();
                     return true;
                 }
                 catch
@@ -169,7 +160,6 @@ namespace Pra.Bibliotheek.Core.Services
                 {
                     connection.Open();
                     connection.Update(publisher);
-                    connection.Close();
                     return true;
                 }
                 catch
@@ -188,7 +178,6 @@ namespace Pra.Bibliotheek.Core.Services
                 {
                     connection.Open();
                     connection.Delete(publisher);
-                    connection.Close();
                     return true;
                 }
                 catch
@@ -204,7 +193,6 @@ namespace Pra.Bibliotheek.Core.Services
             {
                 connection.Open();
                 int count = connection.ExecuteScalar<int>(sql);
-                connection.Close();
                 if (count == 0)
                     return false;
                 else
@@ -219,7 +207,6 @@ namespace Pra.Bibliotheek.Core.Services
                 {
                     connection.Open();
                     Publisher publisher = connection.Get<Publisher>(publisherID);
-                    connection.Close();
                     if (publisher == null)
                         return false;
                     else
@@ -240,7 +227,6 @@ namespace Pra.Bibliotheek.Core.Services
                 {
                     connection.Open();
                     Publisher publisher = connection.QueryFirst(sql);
-                    connection.Close();
                     return publisher;
                 }
                 catch
@@ -258,7 +244,6 @@ namespace Pra.Bibliotheek.Core.Services
                 {
                     connection.Open();
                     Publisher publisher = connection.Get<Publisher>(publisherID);
-                    connection.Close();
                     return publisher;
                 }
                 catch
@@ -283,7 +268,6 @@ namespace Pra.Bibliotheek.Core.Services
                     boeken = connection.Query<Book>("Select * from book where publisherID = @publisherID  order by title", new { publisherID = publisher.ID }).ToList();
                 else
                     boeken = connection.Query<Book>("Select * from book where authorID = @autohorID and publisherID = @publisherID  order by title", new { autohorID = author.ID, publisherID = publisher.ID }).ToList();
-                connection.Close();
             }
             return boeken;
         }
@@ -300,7 +284,6 @@ namespace Pra.Bibliotheek.Core.Services
                 {
                     connection.Open();
                     connection.Insert(book);
-                    connection.Close();
                     return true;
                 }
                 catch
@@ -317,7 +300,6 @@ namespace Pra.Bibliotheek.Core.Services
                 {
                     connection.Open();
                     connection.Update(book);
-                    connection.Close();
                     return true;
                 }
                 catch
@@ -334,7 +316,6 @@ namespace Pra.Bibliotheek.Core.Services
                 {
                     connection.Open();
                     connection.Delete(book);
-                    connection.Close();
                     return true;
                 }
                 catch
