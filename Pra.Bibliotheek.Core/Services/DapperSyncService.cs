@@ -298,19 +298,27 @@ namespace Pra.Bibliotheek.Core.Services
         public List<Book> GetBooks(Author author = null, Publisher publisher = null)
         {
             List<Book> boeken = new List<Book>();
+
+            string sql = "Select * from book";
+            
+            List<string> filters = new List<string>();
+            if (author != null)
+                filters.Add("authorID = @AuthorID");
+            if (publisher != null)
+                filters.Add("publisherID = @PublisherID");
+            if(filters.Count > 0)
+            {
+                sql += $" where {string.Join(" and ", filters)}";
+            }
+
+            sql += " order by title";
+
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))
             {
                 try
                 {
                     connection.Open();
-                    if (author == null && publisher == null)
-                        boeken = connection.Query<Book>("Select * from book order by title").ToList();
-                    else if (author != null && publisher == null)
-                        boeken = connection.Query<Book>("Select * from book where authorID = @autohorID order by title", new { autohorID = author.ID }).ToList();
-                    else if (author == null && publisher != null)
-                        boeken = connection.Query<Book>("Select * from book where publisherID = @publisherID  order by title", new { publisherID = publisher.ID }).ToList();
-                    else
-                        boeken = connection.Query<Book>("Select * from book where authorID = @autohorID and publisherID = @publisherID  order by title", new { autohorID = author.ID, publisherID = publisher.ID }).ToList();
+                    boeken = connection.Query<Book>(sql, new { AuthorID = author?.ID, PublisherID = publisher?.ID }).ToList();
                 }
                 catch
                 {
