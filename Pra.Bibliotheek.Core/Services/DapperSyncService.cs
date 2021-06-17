@@ -84,7 +84,7 @@ namespace Pra.Bibliotheek.Core.Services
                     return true;
             }
         }
-        public bool DoesAuthorIDExists(string authorID)
+        public bool DoesAuthorIDExist(string authorID)
         {
             string sql = "select count(*) from author where id = @id";
             //string sql = $"select count(*) from author where id = '{authorID}'";
@@ -211,7 +211,7 @@ namespace Pra.Bibliotheek.Core.Services
                     return true;
             }
         }
-        public bool DoesPulblisherIDExists(string publisherID)
+        public bool DoesPublisherIDExist(string publisherID)
         {
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))
             {
@@ -289,9 +289,9 @@ namespace Pra.Bibliotheek.Core.Services
         }
         public bool AddBook(Book book)
         {
-            if (!DoesAuthorIDExists(book.AuthorID))
+            if (!DoesAuthorIDExist(book.AuthorID))
                 return false;
-            if (!DoesPulblisherIDExists(book.PublisherID))
+            if (!DoesPublisherIDExist(book.PublisherID))
                 return false;
 
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))

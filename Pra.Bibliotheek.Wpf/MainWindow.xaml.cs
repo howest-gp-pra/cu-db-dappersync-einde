@@ -12,31 +12,31 @@ namespace Pra.Bibliotheek.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
+        IBookService bibService = new DapperSyncService();
+        bool isNew;
+
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        IBookService bibService = new DapperSyncService();
-        bool isNew;
-
-        private void rdbDisconnected_Checked(object sender, RoutedEventArgs e)
+        private void RdbDisconnected_Checked(object sender, RoutedEventArgs e)
         {
             bibService = new StoredProceduresService();
             Window_Loaded(null, null);
         }
 
-        private void rdbConnected1_Checked(object sender, RoutedEventArgs e)
+        private void RdbConnected1_Checked(object sender, RoutedEventArgs e)
         {
             bibService = new ConnectedService();
             Window_Loaded(null, null);
         }
-        private void rdbConnected2_Checked(object sender, RoutedEventArgs e)
+        private void RdbConnected2_Checked(object sender, RoutedEventArgs e)
         {
             bibService = new StoredProceduresService();
             Window_Loaded(null, null);
         }
-        private void rdbConnected3_Checked(object sender, RoutedEventArgs e)
+        private void RdbConnected3_Checked(object sender, RoutedEventArgs e)
         {
             bibService = new DapperSyncService();
             Window_Loaded(null, null);
@@ -64,12 +64,8 @@ namespace Pra.Bibliotheek.Wpf
         {
             ClearControls();
             lstBooks.ItemsSource = null;
-            Author author = null;
-            Publisher publisher = null;
-            if (cmbFilterAuthor.SelectedItem != null)
-                author = (Author)cmbFilterAuthor.SelectedItem;
-            if (cmbFilterPublisher.SelectedItem != null)
-                publisher = (Publisher)cmbFilterPublisher.SelectedItem;
+            Author author = (Author)cmbFilterAuthor.SelectedItem; ;
+            Publisher publisher = (Publisher)cmbFilterPublisher.SelectedItem;
             lstBooks.ItemsSource = bibService.GetBooks(author, publisher);
         }
         private void PopulateAuthors()
@@ -178,7 +174,7 @@ namespace Pra.Bibliotheek.Wpf
                 txtTitle.Focus();
             }
         }
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
             ActivateLeft();
             LstBooks_SelectionChanged(null, null);
@@ -225,7 +221,7 @@ namespace Pra.Bibliotheek.Wpf
             }
             Publisher publisher = (Publisher)cmbPublisher.SelectedItem;
             int.TryParse(txtYear.Text, out int year);
-
+            
             Book book;
             if (isNew)
             {
