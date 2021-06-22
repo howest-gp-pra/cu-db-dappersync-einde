@@ -381,9 +381,5 @@ namespace Pra.Bibliotheek.Core.Services
             }
         }
 
-        public bool SaveData()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
