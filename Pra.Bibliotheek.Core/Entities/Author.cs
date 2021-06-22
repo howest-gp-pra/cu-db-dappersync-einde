@@ -9,12 +9,10 @@ namespace Pra.Bibliotheek.Core.Entities
         [ExplicitKey]
         public string ID { get; }
         public string Name { get; set; }
-        public Author()
+
+        public Author(string name)
         {
             ID = Guid.NewGuid().ToString();
-        }
-        public Author(string name) : this()
-        {
             Name = name;
         }
         public Author(string id, string name)
