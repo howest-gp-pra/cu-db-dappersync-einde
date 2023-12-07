@@ -13,6 +13,11 @@ namespace Pra.Bibliotheek.Core.Services
     public class DapperSyncService : IBookService
     {
         // CRUD AUTEUR
+        const string ConnectionString =
+            @"Data Source=(local)\SQLEXPRESS;
+                            Initial Catalog=Books;
+                            Integrated security=true;";
+
         public List<Author> GetAuthors()
         {
             List<Author> authors;
@@ -31,6 +36,7 @@ namespace Pra.Bibliotheek.Core.Services
             }
             return authors;
         }
+
         public bool AddAuthor(Author author)
         {
             string sql = "Insert into author (id, name) values (@id, @name)";
@@ -49,6 +55,7 @@ namespace Pra.Bibliotheek.Core.Services
                 }
             }
         }
+
         public bool UpdateAuthor(Author author)
         {
             string sql = "Update author set name = @name Where Id = @id";
@@ -66,6 +73,7 @@ namespace Pra.Bibliotheek.Core.Services
                 }
             }
         }
+
         public bool DeleteAuthor(Author author)
         {
             if (IsAuthorInUse(author))
@@ -82,9 +90,10 @@ namespace Pra.Bibliotheek.Core.Services
                 catch
                 {
                     return false;
-                }   
+                }
             }
         }
+
         public bool IsAuthorInUse(Author author)
         {
             string sql = "select count(*) from book where authorID = @id";
@@ -102,6 +111,7 @@ namespace Pra.Bibliotheek.Core.Services
                 }
             }
         }
+
         public bool DoesAuthorIDExist(string authorID)
         {
             string sql = "select count(*) from author where id = @id";
@@ -178,7 +188,7 @@ namespace Pra.Bibliotheek.Core.Services
         public bool AddPublisher(Publisher publisher)
         {
             using (SqlConnection connection = new SqlConnection(Helper.GetConnectionString()))
-            {                
+            {
                 //var newAutoNumberValue = connection.Insert(publisher);
                 try
                 {
@@ -300,13 +310,13 @@ namespace Pra.Bibliotheek.Core.Services
             List<Book> boeken = new List<Book>();
 
             string sql = "Select * from book";
-            
+
             List<string> filters = new List<string>();
             if (author != null)
                 filters.Add("authorID = @AuthorID");
             if (publisher != null)
                 filters.Add("publisherID = @PublisherID");
-            if(filters.Count > 0)
+            if (filters.Count > 0)
             {
                 sql += $" where {string.Join(" and ", filters)}";
             }
